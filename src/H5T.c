@@ -6,6 +6,7 @@ SEXP _H5Tcreate( SEXP _type, SEXP _size ) {
     size_t size = (size_t ) INTEGER(_size)[0];
     
     hid_t tid = H5Tcreate(type, size);
+    addHandle(tid);
     
     SEXP Rval;
     PROTECT(Rval = HID_2_STRSXP(tid));
@@ -18,6 +19,7 @@ SEXP _H5Tcopy( SEXP _dtype_id ) {
 
   hid_t dtype_id = STRSXP_2_HID( _dtype_id );
   hid_t tid = H5Tcopy(dtype_id);
+  addHandle(tid);
 
   SEXP Rval;
   PROTECT(Rval = HID_2_STRSXP(tid));
@@ -216,6 +218,7 @@ SEXP _H5Tenum_create( SEXP _base_id ) {
   hid_t base_id = STRSXP_2_HID( _base_id );
   
   hid_t tid = H5Tenum_create(base_id);
+  addHandle(tid);
   
   SEXP Rval;
   PROTECT(Rval = HID_2_STRSXP(tid));
@@ -297,6 +300,21 @@ SEXP _H5Tget_class( SEXP _dtype_id ) {
   } break;
   }
   
+  UNPROTECT(1);
+  return Rval;
+}
+
+/* herr_t H5Tclose( hid_t dtype_id ) */
+SEXP _H5Tclose( SEXP _dtype_id ) {
+  hid_t dtype_id = STRSXP_2_HID( _dtype_id );
+  herr_t herr = H5Tclose( dtype_id );
+  if (herr == 0) {
+    removeHandle(dtype_id);
+  }
+  
+  SEXP Rval;
+  PROTECT(Rval = allocVector(INTSXP, 1));
+  INTEGER(Rval)[0] = herr;
   UNPROTECT(1);
   return Rval;
 }

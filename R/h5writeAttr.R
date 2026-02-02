@@ -122,6 +122,7 @@ h5writeAttribute.array <- function(
     any_na <- checkForNA && anyNA(attr)
 
     tid <- H5Tenum_create(dtype_id = "H5T_NATIVE_UCHAR")
+    on.exit(H5Tclose(tid), add = TRUE)
     H5Tenum_insert(tid, name = "TRUE", value = 1L)
     H5Tenum_insert(tid, name = "FALSE", value = 0L)
     if (any_na) {
@@ -138,6 +139,7 @@ h5writeAttribute.array <- function(
     H5type = tid,
     encoding = match.arg(encoding, choices = c("ASCII", "UTF-8", "UTF8"))
   )
+
   h5attr <- H5Aopen(h5obj, name)
 
   DimMem <- dim(attr)
