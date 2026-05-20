@@ -481,3 +481,31 @@ H5Dget_chunk_info <- function(h5dataset, index) {
   )
   return(res)
 }
+
+
+
+#' Iterate over chunks of a chunked dataset
+#'
+#' Visits every written chunk in a chunked dataset once and returns their
+#' offsets, filter masks, file addresses, and on-disk sizes. Unlike repeated
+#' calls to \code{\link{H5Dget_chunk_info}}, this function scales linearly
+#' with the number of chunks. This function implements the HDF5-API function
+#' \code{H5Dchunk_iter}.
+#'
+#' @param h5dataset An object of class \code{H5IdComponent} representing a
+#'   chunked HDF5 dataset.
+#'
+#' @return A named list with elements \code{offset} (numeric matrix, one row
+#'   per chunk, one column per dataset dimension), \code{filter_mask},
+#'   \code{addr}, and \code{size} (numeric vectors, one element per chunk).
+#'
+#' @references
+#' \url{https://docs.hdfgroup.org/hdf5/develop/group___h5_d.html}
+#'
+#' @seealso \code{\link{H5Dget_chunk_info}}, \code{\link{H5Dget_num_chunks}}
+#'
+#' @export
+H5Dchunk_iter <- function(h5dataset) {
+  h5checktype(h5dataset, "dataset")
+  .Call("_H5Dchunk_iter", h5dataset@ID, PACKAGE = "rhdf5")
+}

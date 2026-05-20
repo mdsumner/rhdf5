@@ -62,6 +62,7 @@ static R_CallMethodDef libraryRCalls[] = {
   {"_H5Dset_extent", (DL_FUNC) &_H5Dset_extent, 2},
   {"_H5Dget_num_chunks", (DL_FUNC) &_H5Dget_num_chunks, 2},
   {"_H5Dget_chunk_info", (DL_FUNC) &_H5Dget_chunk_info, 3},
+  {"_H5Dchunk_iter", (DL_FUNC) &_H5Dchunk_iter, 1},
   {"_H5Fcreate", (DL_FUNC) &_H5Fcreate, 4},
   {"_H5Fopen", (DL_FUNC) &_H5Fopen, 3},
   {"_H5Freopen", (DL_FUNC) &_H5Freopen, 1},
