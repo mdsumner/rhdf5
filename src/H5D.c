@@ -1228,3 +1228,49 @@ SEXP _H5Dget_num_chunks( SEXP _dataset_id, SEXP _dataspace_id ) {
 
     return ScalarInteger(nchunks);
 }
+
+
+
+SEXP _H5Dget_chunk_info( SEXP _dataset_id, SEXP _dataspace_id, SEXP _index ) {
+    hid_t dataset_id = STRSXP_2_HID( _dataset_id );
+    hid_t dataspace_id = STRSXP_2_HID( _dataspace_id );
+    hsize_t chk_idx = (hsize_t) Rf_asReal(_index);
+
+    int rank = H5Sget_simple_extent_ndims(dataspace_id);
+    if (rank < 0) {
+        error("Could not determine dataset rank\n");
+    }
+
+    hsize_t  *offset      = (hsize_t *) R_alloc(rank, sizeof(hsize_t));
+    unsigned  filter_mask = 0;
+    haddr_t   addr        = 0;
+    hsize_t   size        = 0;
+
+    herr_t herr = H5Dget_chunk_info(dataset_id, dataspace_id, chk_idx,
+                                    offset, &filter_mask, &addr, &size);
+    if (herr < 0) {
+        error("Unable to retrieve chunk info\n");
+    }
+
+    SEXP Rval = PROTECT(allocVector(VECSXP, 4));
+    SEXP names = PROTECT(allocVector(STRSXP, 4));
+
+    SET_STRING_ELT(names, 0, mkChar("offset"));
+    SET_STRING_ELT(names, 1, mkChar("filter_mask"));
+    SET_STRING_ELT(names, 2, mkChar("addr"));
+    SET_STRING_ELT(names, 3, mkChar("size"));
+
+    SEXP r_offset = PROTECT(allocVector(REALSXP, rank));
+    for (int i = 0; i < rank; i++) REAL(r_offset)[i] = (double) offset[i];
+
+    SET_VECTOR_ELT(Rval, 0, r_offset);
+    SET_VECTOR_ELT(Rval, 1, ScalarReal((double) filter_mask));
+    SET_VECTOR_ELT(Rval, 2, ScalarReal((double) addr));
+    SET_VECTOR_ELT(Rval, 3, ScalarReal((double) size));
+
+    setAttrib(Rval, R_NamesSymbol, names);
+
+    UNPROTECT(3);
+    return Rval;
+}
+

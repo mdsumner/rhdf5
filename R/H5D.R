@@ -435,3 +435,49 @@ H5Dget_num_chunks <- function(h5dataset) {
   )
   return(res)
 }
+
+
+#' Retrieve information about a chunk by index
+#'
+#' Retrieves the offset coordinates, filter mask, address and size of a chunk
+#' in a chunked dataset, specified by its linear index. This function
+#' implements the HDF5-API function \code{H5Dget_chunk_info}.
+#'
+#' @param h5dataset An object of class \code{H5IdComponent} representing a
+#'   chunked HDF5 dataset.
+#' @param index Zero-based index of the chunk. Must be less than the value
+#'   returned by \code{\link{H5Dget_num_chunks}}.
+#'
+#' @return A named list with elements:
+#'   \describe{
+#'     \item{\code{offset}}{Numeric vector of length equal to the dataset
+#'       rank, giving the logical position of the chunk's first element in
+#'       each dimension.}
+#'     \item{\code{filter_mask}}{A bitmask where bit \emph{n} indicates that
+#'       filter \emph{n} was skipped when this chunk was written. A value of
+#'       \code{0} means all enabled filters were applied.}
+#'     \item{\code{addr}}{File offset of the chunk in bytes.}
+#'     \item{\code{size}}{Size of the chunk on disk in bytes.}
+#'   }
+#'
+#' @references
+#' \url{https://docs.hdfgroup.org/hdf5/develop/group___h5_d.html}
+#'
+#' @seealso \code{\link{H5Dget_num_chunks}}
+#'
+#' @export
+H5Dget_chunk_info <- function(h5dataset, index) {
+  h5checktype(h5dataset, "dataset")
+  ## The C-level API requires the dataset dataspace; same idiom as H5Dget_num_chunks
+  h5space <- H5Dget_space(h5dataset = h5dataset)
+  H5Sselect_all(h5space = h5space)
+  on.exit(H5Sclose(h5space))
+  res <- .Call(
+    "_H5Dget_chunk_info",
+    h5dataset@ID,
+    h5space@ID,
+    as.numeric(index),
+    PACKAGE = "rhdf5"
+  )
+  return(res)
+}
