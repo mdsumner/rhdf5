@@ -18,3 +18,5 @@ vignettes/practical_tips_cache
 ^\.lintr$
 ^\.git-blame-ignore-revs$
 ^\.venv$
+^\.positai$
+^\.claude$
