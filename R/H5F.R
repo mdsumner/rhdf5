@@ -79,16 +79,27 @@ H5Fcreate <- function(
 #' Leave as `NULL` for anonymous access to public data.
 #'
 #' @export
+<<<<<<< HEAD
 H5Fopen <- function(name,
                     flags = h5default("H5F_ACC_RD"),
                     fapl = NULL,
                     native = FALSE,
                     s3 = FALSE,
                     s3credentials = NULL) {
+=======
+H5Fopen <- function(
+  name,
+  flags = h5default("H5F_ACC_RD"),
+  fapl = NULL,
+  native = FALSE,
+  s3 = FALSE,
+  s3credentials = NULL
+) {
+>>>>>>> devel
   if (length(name) != 1 || !is.character(name)) {
     stop("'name' must be a character string of length 1")
   }
-  if (!grepl("^http[s]?://", x = name)) {
+  if (!startsWith(name, "http://") && !startsWith(name, "https://")) {
     name <- normalizePath(name, mustWork = FALSE)
   }
   flags <- h5checkConstants("H5F_ACC_RD", flags)
